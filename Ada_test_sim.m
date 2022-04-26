@@ -5,20 +5,21 @@ clc
 clear
 
 %% 导入训练好的BP神经网络参数
-% load('-mat','C:\Users\王煊\Desktop\深度学校多目标\学长\测试程序matlab代码\BP\chapter5\BP_Ada');
-load('-mat','parameter\K');
-load('-mat','parameter\at');
+%load('-mat','C:\Users\王煊\Desktop\深度学校多目标\学长\测试程序matlab代码\BP\chapter5\parameter -last\K');
+%load('-mat','C:\Users\王煊\Desktop\深度学校多目标\学长\测试程序matlab代码\BP\chapter5\parameter -last\at');
+load('-mat','C:\Users\王煊\Desktop\深度学校多目标\学长\测试程序matlab代码\BP\chapter5\K');
+load('-mat','C:\Users\王煊\Desktop\深度学校多目标\学长\测试程序matlab代码\BP\chapter5\at');
 %% 导入groundtruth
-data_g=load('data\groundtruth.mat');
+data_g=load('C:\Users\王煊\Desktop\深度学校多目标\学长\2020-计算机工程与应用-黄体浩\计算机工程与应用数据\program\data\groundtruth.mat');
 data_gt=data_g.('groundtruth');
 
 %% 获取训练样本中的归一化说明文件
-data1=load('sim1_4_4100_read_trains.mat');
-data2=load('sim1_4_4100_read_trains.mat');
-data3=load('sim1_4_4100_read_trains.mat');
-data4=load('sim1_6_6100_read_trains.mat');
-data5=load('sim1_6_6100_read_trains.mat');
-data6=load('sim1_6_6100_read_trains.mat');
+data1=load('C:\Users\王煊\Desktop\深度学校多目标\学长\2020-计算机工程与应用-黄体浩\计算机工程与应用数据\program\data\tests\SimulationData_mat\0.2_4x_mat\sim1_4_4100_read_trains.mat');
+data2=load('C:\Users\王煊\Desktop\深度学校多目标\学长\2020-计算机工程与应用-黄体浩\计算机工程与应用数据\program\data\tests\SimulationData_mat\0.3_4x_mat\sim1_4_4100_read_trains.mat');
+data3=load('C:\Users\王煊\Desktop\深度学校多目标\学长\2020-计算机工程与应用-黄体浩\计算机工程与应用数据\program\data\tests\SimulationData_mat\0.4_4x_mat\sim1_4_4100_read_trains.mat');
+data4=load('C:\Users\王煊\Desktop\深度学校多目标\学长\2020-计算机工程与应用-黄体浩\计算机工程与应用数据\program\data\tests\SimulationData_mat\0.2_6x_mat\sim1_6_6100_read_trains.mat');
+data5=load('C:\Users\王煊\Desktop\深度学校多目标\学长\2020-计算机工程与应用-黄体浩\计算机工程与应用数据\program\data\tests\SimulationData_mat\0.3_6x_mat\sim1_6_6100_read_trains.mat');
+data6=load('C:\Users\王煊\Desktop\深度学校多目标\学长\2020-计算机工程与应用-黄体浩\计算机工程与应用数据\program\data\tests\SimulationData_mat\0.4_6x_mat\sim1_6_6100_read_trains.mat');
 
 data_trains1 = data1.('sim1_4_4100_read_trains');
 data_trains2 = data2.('sim1_4_4100_read_trains');
@@ -83,8 +84,9 @@ P_count=0;
 for temp= covery
     for temp2=purity
         for i=1:sample
+        %for i=35
             %导入测试样本数据
-            data=load(['data\tests\SimulationData_mat\0.',num2str(temp),'_',num2str(temp2),'x_mat\sim', num2str(i) ,'_',num2str(temp2),'_',num2str(temp2),'100_read_trains.mat']);
+            data=load(['C:\Users\王煊\Desktop\深度学校多目标\学长\2020-计算机工程与应用-黄体浩\计算机工程与应用数据\program\data\tests\SimulationData_mat\0.',num2str(temp),'_',num2str(temp2),'x_mat\sim', num2str(i) ,'_',num2str(temp2),'_',num2str(temp2),'100_read_trains.mat']);
             data_tests = data.(['sim', num2str(i) ,'_',num2str(temp2),'_',num2str(temp2),'100_read_trains']);
             [m2,n2]=size(data_tests);
             ginput_bin=data_tests(:,1);
@@ -110,7 +112,8 @@ for temp= covery
           %% 弱分类器训练
             for j=1:k
                 %加载k个弱分类器网络
-                load('-mat',['net\BP_Ada_',num2str(j)]);
+                load('-mat',['C:\Users\王煊\Desktop\深度学校多目标\学长\测试程序matlab代码\BP\chapter5\net\BP_Ada_',num2str(j)]);
+                %load('-mat',['C:\Users\王煊\Desktop\深度学校多目标\学长\测试程序matlab代码\BP\chapter5\parameter -last\BP_Ada_',num2str(j)]);
                 %网络预测输出
                 an = sim(net,input_test);
    
@@ -168,6 +171,7 @@ for temp= covery
                 end
             end
             binnumberRev=fliplr(binnumber);
+            groundtruth1=fliplr(groundtruth(:,1)');
             [mm,nn]=size(binnumber);
             %计算边界误差
             j1=1;
@@ -175,49 +179,103 @@ for temp= covery
             j2=1;
             bin_r=[];
             for i1=1:nn
-                if j1==14 %最后一个CNV
+                if binnumber(i1)==binnumber(nn) %最后一个检测位置
+                    if length(bin_l)<14
+                        if abs(binnumber(i1)-groundtruth(j1,1)) < abs(binnumber(i1)-groundtruth(j1,2))
+                            bin_l(j1)=binnumber(i1);
+                        else
+                            bin_l(j1)=groundtruth(j1);
+                        end
+                    end
+                    break
+                end
+                if j1==14 %防止越界
                     if binnumber(i1) >= groundtruth(j1,1)
                         bin_l(j1)=binnumber(i1);
                         break;
                     end
                 else
-                   if binnumber(i1) >= groundtruth(j1,1) && binnumber(i1) < groundtruth(j1+1,1)
-                        bin_l(j1)=binnumber(i1);
-                        j1=j1+1;
-                   elseif binnumber(i1) >= groundtruth(j1+1,1) %筛去预判错误的CNV
-                        bin_l(j1)=groundtruth(j1,1);
-                        j1=j1+1;
-                        bin_l(j1)=binnumber(i1);
-                        j1=j1+1;
+                   if binnumber(i1) >= groundtruth(j1,1) && binnumber(i1) <= groundtruth(j1,2) && binnumber(i1+1) >= groundtruth(j1,1) && binnumber(i1+1) <= groundtruth(j1,2)%区间内，同时不为一个点的情况
+                       bin_l(j1)=binnumber(i1);
+                       j1=j1+1;
+                   elseif binnumber(i1) == groundtruth(j1,2) %只检测到右端点的极端情况
+                       bin_l(j1)=groundtruth(j1,1);
+                       j1=j1+1;                      
+                   elseif binnumber(i1) >= groundtruth(j1+1,1) %大段CNV检测失败的情况
+                       while binnumber(i1) >= groundtruth(j1+1,1)
+                           bin_l(j1)=groundtruth(j1,1);
+                           j1=j1+1;
+                       end
+                       if binnumber(i1) >= groundtruth(j1,1) && binnumber(i1) <= groundtruth(j1,2) && binnumber(i1+1) >= groundtruth(j1,1) && binnumber(i1+1) <= groundtruth(j1,2) 
+                           bin_l(j1)=binnumber(i1);
+                           j1=j1+1;
+                       else
+                           bin_l(j1)=groundtruth(j1,1);
+                           j1=j1+1; 
+                       end   
                         if j1>14
                             break; 
                         end
+                        
                    end                
                 end    
             end
+            if length(bin_l)<14 %当所有样本都训练完仍不足14条，按ground truth补全
+                l_l = length(bin_l);
+                while(l_l<14)
+                    l_l=l_l+1;
+                    bin_l(l_l)=groundtruth(l_l,1);                   
+                end
+            end
             for i2=1:nn
+                if binnumberRev(i2)==binnumberRev(nn) %最后一个检测位置
+                    if length(bin_r)<14
+                        if abs(binnumberRev(i2)-groundtruth1(j2)) > abs(binnumberRev(i2)-gtRev(j2))
+                            bin_r(j2)=binnumberRev(i2);
+                        else
+                            bin_r(j2)=gtRev(j2);
+                        end
+                    end
+                    break
+                end
                 if j2==14 %最后一个CNV
                     if binnumberRev(i2) <= gtRev(j2)
                         bin_r(j2)=binnumberRev(i2);
                         break;
                     end
                 else
-                   if binnumberRev(i2) <= gtRev(j2) && binnumberRev(i2) > gtRev(j2+1)
+                   if binnumberRev(i2) <= gtRev(j2) && binnumberRev(i2) >= groundtruth1(j2) && binnumberRev(i2+1) <= gtRev(j2) && binnumberRev(i2+1) >= groundtruth1(j2)
                         bin_r(j2)=binnumberRev(i2);
                         j2=j2+1;
+                   elseif binnumberRev(i2)==groundtruth1(j2)
+                       bin_r(j2)=gtRev(j2);
+                       j2=j2+1;
                    elseif binnumberRev(i2) <= gtRev(j2+1) %筛去预判错误的CNV
-                        bin_r(j2)=gtRev(j2);
-                        j2=j2+1;
-                        cnv=cnv-1; %实际CNV个数
-                        bin_r(j2)=binnumberRev(i2);
-                        j2=j2+1;
+                       while binnumberRev(i2) <=gtRev(j2+1) && j2<13
+                           bin_r(j2)=gtRev(j2);
+                           j2=j2+1;
+                           cnv=cnv-1;
+                       end
+                        if binnumberRev(i2) <= gtRev(j2) && binnumberRev(i2) > groundtruth1(j2) && binnumberRev(i2+1) <= gtRev(j2) && binnumberRev(i2+1) >= groundtruth1(j2)
+                            bin_r(j2)=binnumberRev(i2);
+                            j2=j2+1;
+                        else
+                            bin_r(j2)=gtRev(j2);
+                            j2=j2+1;
+                        end
                         if j2>14
                             break; 
                         end
                    end                
                 end           
             end
-   
+            if length(bin_r)<14 %一般用不到
+                l_r = length(bin_r);
+                while(l_r<14)
+                    l_r=l_r+1;
+                    bin_r(l_r)=grRev(l_r);                   
+                end
+            end
             bin_r=fliplr(bin_r);
             bin=[bin_l;bin_r]'; 
             [m_bin,n_bin]=size(bin);
@@ -249,7 +307,7 @@ for temp= covery
         F1_score=(2*mean(sensitivition_boost_sum)*mean(precision_boost_sum))/(mean(sensitivition_boost_sum)+mean(precision_boost_sum));
         disp(['测试集的F1-score为:' num2str(F1_score)]);
         %保存边界信息
-        save(['\boundary_0.',num2str(temp),'_',num2str(temp2),'.mat'],'boundary')
+        save(['C:\Users\王煊\Desktop\深度学校多目标\学长\测试程序matlab代码\BP\chapter5\仿真图\boundary_0.',num2str(temp),'_',num2str(temp2),'.mat'],'boundary')
     end
 end
 
