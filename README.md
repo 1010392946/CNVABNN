@@ -36,3 +36,4 @@ The detection of the real datasets of CNVs using CNVABNN similarly to step 3. Ru
 ## Detection performance of CNVABNN
 CNVABNN achieves good performance on low coverage datasets and is also adaptable at higher coverage. The performance comparison with peer methods is as follows:
 ![](img/performance.jpg)
+![](img/performance1.jpg)
