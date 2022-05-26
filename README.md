@@ -34,6 +34,5 @@ In addition, this project incorporates the Adaboost algorithm to improve the det
 The detection of the real datasets of CNVs using CNVABNN similarly to step 3. Running Ada_test_real simply requires importing the training model and modifying the path. Among them, we give the three real datasets used for testing, NA19238,NA19239,NA19240, which can be found in the RealData folder.
 
 ## Detection performance of CNVABNN
-CNVABNN achieves good performance on low coverage datasets and is also adaptable at higher coverage. The performance comparison with peer methods is as follows:
+CNVABNN achieves good performance on low coverage datasets and is also adaptable at higher coverage. The performance comparison with MFCNV is as follows:
 ![](img/performance.jpg)
-![](img/performance1.jpg)
