@@ -12,8 +12,11 @@ CNVABNN is a cnv detection method based on RD strategy for single sample. The pr
 
 ## Requirement/environment
 This code was tested with Matlab R2020b and the machine configuration used for testing was as follows：
+<br>
 system: windows
+<br>
 CPU：Intel(R) Core(TM) i7-9700K CPU @ 3.60GHz 
+<br>
 Before running CNVABNN, BAM file needs to be preprocessed, and the corresponding code can be found in ‘code/main_simulation1.py’
 ## Usage of CNVABNN
 ### step1: Modify configuration
