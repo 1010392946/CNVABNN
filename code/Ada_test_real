@@ -7,7 +7,7 @@ clear
 %% 导入训练好的BP神经网络参数
 load('-mat','Parameters\K');
 load('-mat','Parameters\at');
-% load('-mat','C:\Users\王煊\Desktop\深度学校多目标\学长\对比算法\mfcnv\mfcnv-master\mfcnv-master\BPNN');
+
 %% 获取训练样本中的归一化说明文件
 data1=load('\tests\SimulationData_mat\0.2_4x_mat\sim1_4_4100_read_trains.mat');
 data2=load('\tests\SimulationData_mat\0.3_4x_mat\sim1_4_4100_read_trains.mat');
