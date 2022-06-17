@@ -176,7 +176,7 @@ for z in range(1,1):
 
 
     # 将比对的位点以及质量信息存入二维数组posmapq_old
-    samfile=pysam.AlignmentFile("/media/huangtihao/Huang Tihao/data/lcdx/simu_data/simu_chr21_0.4_6x/sim"+ str(z) +"_6_6100_read.sort.bam", "rb")
+    samfile=pysam.AlignmentFile("simu_data/simu_chr21_0.4_6x/sim"+ str(z) +"_6_6100_read.sort.bam", "rb")
     map_q = []
     pos_q = []
     for r in samfile:
@@ -280,7 +280,7 @@ for z in range(1,1):
 
 
     #========================================================== step3. output to files, with record number
-    # myOut1 = open('/home/huangtihao/CNV-IFTV/software/0.3_6x/sim' + str(z) + '_6_6100_read_all.txt','w')
+    # myOut1 = open('software/0.3_6x/sim' + str(z) + '_6_6100_read_all.txt','w')
     # myOut1.write("bin" + "\t" + "rd" + "\t" + "gc" + "\t" + "rel" + "\t" + "qua" + "\t" + "label" + "\n")
     # for i in range(len(pos)):
     # # ========================================================== step3.1 output
@@ -315,7 +315,7 @@ for z in range(1,1):
     #                 myOut1.write("\t" + "0" + "\n")
     # myOut1.close()
     # ========================================================== step4 output to files, with trains
-    myOut2 = open('/home/huangtihao/CNV-IFTV/software/0.4_6x/sim' + str(z) + '_6_6100_read_trains.txt','w')
+    myOut2 = open('software/0.4_6x/sim' + str(z) + '_6_6100_read_trains.txt','w')
     #myOut.write("bin" + "\t" + "rd" + "\t" + "gc" + "\t" + "rel" + "\t" + "qua" + "\t" + "label" + "\n")
     for i in range(len(pos)):
         myOut2.write(str(pos[i]))      #bin
@@ -349,16 +349,3 @@ for z in range(1,1):
                 if j == (list3.shape[0] - 1):
                     myOut2.write("\t" + "0" + "\n")
     myOut2.close()
-    # ========================================================= step5 output to files, with tests
-    # myOut3 = open('/home/huangtihao/CNV-IFTV/software/0.3_6x/sim' + str(z) + '_6_6100_read_trains.txt', 'rb')
-    # myOut4 = open('/home/huangtihao/CNV-IFTV/software/0.3_6x/sim' + str(z) + '_6_6100_read_tests.txt', 'wb')
-    # i=0
-    # while True:
-    #     line = myOut3.readline()
-    #     i+=1
-    #     if i>29550 and i<=34550:
-    #         myOut4.write(line)
-    #     if i>34550:
-    #         break
-    # myOut3.close()
-    # myOut4.close()
