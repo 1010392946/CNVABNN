@@ -5,21 +5,21 @@ clc
 clear
 
 %% 导入训练好的BP神经网络参数
-%load('-mat','C:\Users\王煊\Desktop\深度学校多目标\学长\测试程序matlab代码\BP\chapter5\parameter -last\K');
-%load('-mat','C:\Users\王煊\Desktop\深度学校多目标\学长\测试程序matlab代码\BP\chapter5\parameter -last\at');
-load('-mat','C:\Users\王煊\Desktop\深度学校多目标\学长\测试程序matlab代码\BP\chapter5\K');
-load('-mat','C:\Users\王煊\Desktop\深度学校多目标\学长\测试程序matlab代码\BP\chapter5\at');
+%load('-mat','\parameter -last\K');
+%load('-mat','\parameter -last\at');
+load('-mat','\K');
+load('-mat','\at');
 %% 导入groundtruth
-data_g=load('C:\Users\王煊\Desktop\深度学校多目标\学长\2020-计算机工程与应用-黄体浩\计算机工程与应用数据\program\data\groundtruth.mat');
+data_g=load('\data\groundtruth.mat');
 data_gt=data_g.('groundtruth');
 
 %% 获取训练样本中的归一化说明文件
-data1=load('C:\Users\王煊\Desktop\深度学校多目标\学长\2020-计算机工程与应用-黄体浩\计算机工程与应用数据\program\data\tests\SimulationData_mat\0.2_4x_mat\sim1_4_4100_read_trains.mat');
-data2=load('C:\Users\王煊\Desktop\深度学校多目标\学长\2020-计算机工程与应用-黄体浩\计算机工程与应用数据\program\data\tests\SimulationData_mat\0.3_4x_mat\sim1_4_4100_read_trains.mat');
-data3=load('C:\Users\王煊\Desktop\深度学校多目标\学长\2020-计算机工程与应用-黄体浩\计算机工程与应用数据\program\data\tests\SimulationData_mat\0.4_4x_mat\sim1_4_4100_read_trains.mat');
-data4=load('C:\Users\王煊\Desktop\深度学校多目标\学长\2020-计算机工程与应用-黄体浩\计算机工程与应用数据\program\data\tests\SimulationData_mat\0.2_6x_mat\sim1_6_6100_read_trains.mat');
-data5=load('C:\Users\王煊\Desktop\深度学校多目标\学长\2020-计算机工程与应用-黄体浩\计算机工程与应用数据\program\data\tests\SimulationData_mat\0.3_6x_mat\sim1_6_6100_read_trains.mat');
-data6=load('C:\Users\王煊\Desktop\深度学校多目标\学长\2020-计算机工程与应用-黄体浩\计算机工程与应用数据\program\data\tests\SimulationData_mat\0.4_6x_mat\sim1_6_6100_read_trains.mat');
+data1=load('\0.2_4x_mat\sim1_4_4100_read_trains.mat');
+data2=load('\0.3_4x_mat\sim1_4_4100_read_trains.mat');
+data3=load('\0.4_4x_mat\sim1_4_4100_read_trains.mat');
+data4=load('\0.2_6x_mat\sim1_6_6100_read_trains.mat');
+data5=load('\0.3_6x_mat\sim1_6_6100_read_trains.mat');
+data6=load('\0.4_6x_mat\sim1_6_6100_read_trains.mat');
 
 data_trains1 = data1.('sim1_4_4100_read_trains');
 data_trains2 = data2.('sim1_4_4100_read_trains');
@@ -86,7 +86,7 @@ for temp= covery
         for i=1:sample
         %for i=35
             %导入测试样本数据
-            data=load(['C:\Users\王煊\Desktop\深度学校多目标\学长\2020-计算机工程与应用-黄体浩\计算机工程与应用数据\program\data\tests\SimulationData_mat\0.',num2str(temp),'_',num2str(temp2),'x_mat\sim', num2str(i) ,'_',num2str(temp2),'_',num2str(temp2),'100_read_trains.mat']);
+            data=load(['data\tests\SimulationData_mat\0.',num2str(temp),'_',num2str(temp2),'x_mat\sim', num2str(i) ,'_',num2str(temp2),'_',num2str(temp2),'100_read_trains.mat']);
             data_tests = data.(['sim', num2str(i) ,'_',num2str(temp2),'_',num2str(temp2),'100_read_trains']);
             [m2,n2]=size(data_tests);
             ginput_bin=data_tests(:,1);
@@ -112,8 +112,8 @@ for temp= covery
           %% 弱分类器训练
             for j=1:k
                 %加载k个弱分类器网络
-                load('-mat',['C:\Users\王煊\Desktop\深度学校多目标\学长\测试程序matlab代码\BP\chapter5\net\BP_Ada_',num2str(j)]);
-                %load('-mat',['C:\Users\王煊\Desktop\深度学校多目标\学长\测试程序matlab代码\BP\chapter5\parameter -last\BP_Ada_',num2str(j)]);
+                load('-mat',['net\BP_Ada_',num2str(j)]);
+                %load('-mat',['parameter -last\BP_Ada_',num2str(j)]);
                 %网络预测输出
                 an = sim(net,input_test);
    
@@ -307,7 +307,7 @@ for temp= covery
         F1_score=(2*mean(sensitivition_boost_sum)*mean(precision_boost_sum))/(mean(sensitivition_boost_sum)+mean(precision_boost_sum));
         disp(['测试集的F1-score为:' num2str(F1_score)]);
         %保存边界信息
-        save(['C:\Users\王煊\Desktop\深度学校多目标\学长\测试程序matlab代码\BP\chapter5\仿真图\boundary_0.',num2str(temp),'_',num2str(temp2),'.mat'],'boundary')
+        save(['\boundary_0.',num2str(temp),'_',num2str(temp2),'.mat'],'boundary')
     end
 end
 
