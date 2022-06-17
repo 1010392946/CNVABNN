@@ -21,9 +21,9 @@ Before running CNVABNN, BAM file needs to be preprocessed, and the corresponding
 ## Usage of CNVABNN
 ### step0: Cloning the git repository
 CNVABNN can be cloned locally with git, which is available for free from https://git-scm.com/. Once you have successfully installed git, you will need to select a suitable location locally to save the clone version of CNVABNN. Finally, open the command line with cmd and use the following command to clone the git repository locally.
-···
+```
 git clone https://github.com/1010392946/CNVABNN.git
-···
+```
 
 ### step1: Modify configuration
 Before training the model, the path of the data needs to be modified. The path of data1-data6 used in train.m needs to be modified. The imported data are from the partial simulated dataset, which can be found in the train folder.
