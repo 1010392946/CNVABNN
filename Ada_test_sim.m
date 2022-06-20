@@ -1,19 +1,19 @@
-%% 该部分为BP_Adaboost算法的测试集分类过程
+%% This script is the test set classification process for CNVABNN
 
-%% 清空环境变量
+%% Clear environment variables
 clc
 clear
 
-%% 导入训练好的BP神经网络参数
+%% Import the parameters of the trained neural network
 %load('-mat','\parameter -last\K');
 %load('-mat','\parameter -last\at');
 load('-mat','\K');
 load('-mat','\at');
-%% 导入groundtruth
+%% Import groundtruth file
 data_g=load('\data\groundtruth.mat');
 data_gt=data_g.('groundtruth');
 
-%% 获取训练样本中的归一化说明文件
+%% Obtain normalized information in training samples
 data1=load('\0.2_4x_mat\sim1_4_4100_read_trains.mat');
 data2=load('\0.3_4x_mat\sim1_4_4100_read_trains.mat');
 data3=load('\0.4_4x_mat\sim1_4_4100_read_trains.mat');
@@ -34,15 +34,13 @@ column=[2,3,4,5];
 trainLines = m1;
 gdata(1:trainLines,:) = data_trains(1:trainLines,:);
 
-%从1到trainlines间随机排序
+%Random sorting
 t=rand(1,trainLines);
 [m,n]=sort(t);
 
-%得到输入输出数据
+%Get input and output data
 ginput=gdata(:,column);
 goutput1 =gdata(:,6);
-% [a,b]=find(goutput1==1);
-%输出从一维变成四维：0正常，1gain，2hemi_loss，3homo_loss;
 goutput=zeros(trainLines,4);
 for i=1:trainLines
     switch goutput1(i)
@@ -57,35 +55,31 @@ for i=1:trainLines
     end
 end
 
-%找出训练数据和预测数据
+%Find the training data and prediction data
 ginput_train=ginput(n(1:trainLines),:)';
 goutput_train=goutput(n(1:trainLines),:)';
 
-%样本输入输出数据归一化
+%Normalization
 [ginputn,ginputs]=mapminmax(ginput_train);
 [goutputn,outputs]=mapminmax(goutput_train);
 
-%预处理边界数据
 g_column=[1,2];
 groundtruth=data_gt(:,g_column);
 gtRev=fliplr(groundtruth(:,2)');
-%% 测试部分
+%% Test section
 sample = 50;
 covery=[2,3,4];
 purity=[4,6];
-boundary=[]; %每个bam的边界，用于生成箱图
+boundary=[]; %For generating box plots
 count_bias_sum=0;
 num_boundary=0;
-% precision_sum=[];
-% sensitivition_sum=[];
 precision_boost_sum=[];
 sensitivition_boost_sum=[];
 P_count=0;
 for temp= covery
     for temp2=purity
         for i=1:sample
-        %for i=35
-            %导入测试样本数据
+            %Importing test sample data
             data=load(['data\tests\SimulationData_mat\0.',num2str(temp),'_',num2str(temp2),'x_mat\sim', num2str(i) ,'_',num2str(temp2),'_',num2str(temp2),'100_read_trains.mat']);
             data_tests = data.(['sim', num2str(i) ,'_',num2str(temp2),'_',num2str(temp2),'100_read_trains']);
             [m2,n2]=size(data_tests);
@@ -107,35 +101,34 @@ for temp= covery
             ginput_test=ginput_test((1:m2),:)';
             goutput_insim=goutput_insim((1:m2),:)';
 
-            %获取归一化的测试输入样本数据
+            %Obtain normalized test samples
             input_test=mapminmax('apply',ginput_test,ginputs);
-          %% 弱分类器训练
+            %% Weak classifier training
             for j=1:k
-                %加载k个弱分类器网络
+                %Load k weak classifier networks
                 load('-mat',['net\BP_Ada_',num2str(j)]);
-                %load('-mat',['parameter -last\BP_Ada_',num2str(j)]);
-                %网络预测输出
+                %Predicted output results
                 an = sim(net,input_test);
    
-                %反归一化预测输出
+                %inverse normalization
                 BPoutput=mapminmax('reverse',an,outputs);
     
-                %统计预测误差
+                %Statistical prediction error
                 error=abs(BPoutput-goutput_insim);
 
                 P_count=0;
                 TP_count=0;
                 for q=1:m2
-                % 4.7 统计TP_count,P_count,TPFP_count,boundary
+                % calculate TP_count,P_count,TPFP_count,boundary
                     if (( error(2,q) < error(1,q) && error(2,q) < error(3,q) && error(2,q) < error(4,q) && goutput_insim(2,q) == 1) || ( error(3,q) < error(1,q) && error(3,q) < error(2,q) && error(3,q) < error(4,q) && goutput_insim(3,q) == 1) || (error(4,q) < error(1,q) && error(4,q) < error(2,q) && error(4,q) < error(3,q) && goutput_insim(4,q) == 1)) 
-                        TP_count=TP_count+1; %统计真阳性值
+                        TP_count=TP_count+1; %calculate TP
                     end
 
                     if ( goutput_insim(2,q) == 1 || goutput_insim(3,q) == 1 || goutput_insim(4,q) == 1 )
                         P_count=P_count+1;
                     end
                 end
-            %分类结果
+                %Classification results
                 for z=1:m2
                     [x,y]=min(error);
                     if y(z)==1
@@ -151,11 +144,11 @@ for temp= covery
             end
           
 
-          %% 组合弱分类器
+            %% Combining weak classifiers
             TP_count_boost=0;
             TPFP_count_boost=0;
             result_boost=combine_BP(result_yc,at,m2,k);
-           %% 统计每个样本仿真数据边界
+            %% Calculate the boundaries of the samples
             k1=1;k2=1;
             bound=0;
             binnumber=[];
@@ -167,19 +160,19 @@ for temp= covery
                     k1=k1+1;
                 end
                 if (result_boost(q)==1||result_boost(q)==2||result_boost(q)==3)
-                    TPFP_count_boost=TPFP_count_boost+1; %表示全部值，有对有错，表示TP+FP
+                    TPFP_count_boost=TPFP_count_boost+1; %TP+FP
                 end
             end
             binnumberRev=fliplr(binnumber);
             groundtruth1=fliplr(groundtruth(:,1)');
             [mm,nn]=size(binnumber);
-            %计算边界误差
+            %Calculate the boundary error
             j1=1;
             bin_l=[];
             j2=1;
             bin_r=[];
             for i1=1:nn
-                if binnumber(i1)==binnumber(nn) %最后一个检测位置
+                if binnumber(i1)==binnumber(nn) %Last detection position
                     if length(bin_l)<14
                         if abs(binnumber(i1)-groundtruth(j1,1)) < abs(binnumber(i1)-groundtruth(j1,2))
                             bin_l(j1)=binnumber(i1);
@@ -189,7 +182,7 @@ for temp= covery
                     end
                     break
                 end
-                if j1==14 %防止越界
+                if j1==14 %Prevent crossing the border
                     if binnumber(i1) >= groundtruth(j1,1)
                         bin_l(j1)=binnumber(i1);
                         break;
@@ -198,10 +191,10 @@ for temp= covery
                    if binnumber(i1) >= groundtruth(j1,1) && binnumber(i1) <= groundtruth(j1,2) && binnumber(i1+1) >= groundtruth(j1,1) && binnumber(i1+1) <= groundtruth(j1,2)%区间内，同时不为一个点的情况
                        bin_l(j1)=binnumber(i1);
                        j1=j1+1;
-                   elseif binnumber(i1) == groundtruth(j1,2) %只检测到右端点的极端情况
+                   elseif binnumber(i1) == groundtruth(j1,2) %Extreme case where only the right endpoint is detected
                        bin_l(j1)=groundtruth(j1,1);
                        j1=j1+1;                      
-                   elseif binnumber(i1) >= groundtruth(j1+1,1) %大段CNV检测失败的情况
+                   elseif binnumber(i1) >= groundtruth(j1+1,1) %Large segment CNV detection failure
                        while binnumber(i1) >= groundtruth(j1+1,1)
                            bin_l(j1)=groundtruth(j1,1);
                            j1=j1+1;
@@ -220,7 +213,7 @@ for temp= covery
                    end                
                 end    
             end
-            if length(bin_l)<14 %当所有样本都训练完仍不足14条，按ground truth补全
+            if length(bin_l)<14 %When all samples are trained and there are still less than 14 bars, press ground truth to complete
                 l_l = length(bin_l);
                 while(l_l<14)
                     l_l=l_l+1;
@@ -228,7 +221,7 @@ for temp= covery
                 end
             end
             for i2=1:nn
-                if binnumberRev(i2)==binnumberRev(nn) %最后一个检测位置
+                if binnumberRev(i2)==binnumberRev(nn) %Last detection position
                     if length(bin_r)<14
                         if abs(binnumberRev(i2)-groundtruth1(j2)) > abs(binnumberRev(i2)-gtRev(j2))
                             bin_r(j2)=binnumberRev(i2);
@@ -238,7 +231,7 @@ for temp= covery
                     end
                     break
                 end
-                if j2==14 %最后一个CNV
+                if j2==14 %The last CNV
                     if binnumberRev(i2) <= gtRev(j2)
                         bin_r(j2)=binnumberRev(i2);
                         break;
@@ -250,7 +243,7 @@ for temp= covery
                    elseif binnumberRev(i2)==groundtruth1(j2)
                        bin_r(j2)=gtRev(j2);
                        j2=j2+1;
-                   elseif binnumberRev(i2) <= gtRev(j2+1) %筛去预判错误的CNV
+                   elseif binnumberRev(i2) <= gtRev(j2+1) %Screening
                        while binnumberRev(i2) <=gtRev(j2+1) && j2<13
                            bin_r(j2)=gtRev(j2);
                            j2=j2+1;
@@ -269,7 +262,7 @@ for temp= covery
                    end                
                 end           
             end
-            if length(bin_r)<14 %一般用不到
+            if length(bin_r)<14 %Usually not used
                 l_r = length(bin_r);
                 while(l_r<14)
                     l_r=l_r+1;
@@ -291,22 +284,21 @@ for temp= covery
             boundary(i)=count_bias;
             num_boundary = num_boundary + 1;
             count_bias_sum = count_bias_sum+count_bias;
-            %计算强分类敏感度
+            %Calculating the sensitivity of a strong classifier
             sensitivition_boost=TP_count_boost/P_count;
-            %计算强分类准确率
+            %Calculating the precision of a strong classifier
             precision_boost = TP_count_boost/TPFP_count_boost;
             precision_boost_sum=[precision_boost_sum precision_boost];
             sensitivition_boost_sum=[sensitivition_boost_sum sensitivition_boost];
            
         end
-        %输出准确率信息
-        disp(['测试集（0.',num2str(temp),'_',num2str(temp2),'）的准确率为：' num2str(mean(precision_boost_sum))]);
-        %输出敏感信息
-        disp(['测试集（0.',num2str(temp),'_',num2str(temp2),'）的敏感度为：' num2str(mean(sensitivition_boost_sum))]);
-        %输出F1-score
+        disp(['Test set（0.',num2str(temp),'_',num2str(temp2),'）precision：' num2str(mean(precision_boost_sum))]);
+        %sensitivity
+        disp(['Test set（0.',num2str(temp),'_',num2str(temp2),'）sensitivity：' num2str(mean(sensitivition_boost_sum))]);
+        %F1-score
         F1_score=(2*mean(sensitivition_boost_sum)*mean(precision_boost_sum))/(mean(sensitivition_boost_sum)+mean(precision_boost_sum));
-        disp(['测试集的F1-score为:' num2str(F1_score)]);
-        %保存边界信息
+        disp(['Test set/F1-score:' num2str(F1_score)]);
+        %save
         save(['\boundary_0.',num2str(temp),'_',num2str(temp2),'.mat'],'boundary')
     end
 end
