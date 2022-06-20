@@ -1,10 +1,10 @@
 function result_boost = combine(result_yc,at,nn,k)
-%此函数主要实现若分类器的组合
-%归一化at
+%This function mainly implements the combination of weak classifiers
+%Normalization
 at=at/sum(at);
 result_boost=zeros(1,nn);
 
-%组合所有弱分类器的不同类别占比
+%Calculate the percentage of different categories
 for i=1:nn
     p_0=0;p_1=0;p_2=0;p_3=0;
     for j=1:k
