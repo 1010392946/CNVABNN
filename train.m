@@ -1,10 +1,10 @@
-%% 该代码为基于BP-Adaboost的强分类器分类
+%% Strong classifier classification based on BP-Adaboost
 
-%% 清空环境变量
+%% Clear environment variables
 clc
 clear
 
-%% 导入训练样本数据
+%% Importing training sample data
 data1=load('\tests\SimulationData_mat\0.2_4x_mat\sim1_4_4100_read_trains.mat');
 data2=load('\tests\SimulationData_mat\0.2_6x_mat\sim1_6_6100_read_trains.mat');
 data3=load('\tests\SimulationData_mat\0.3_4x_mat\sim1_4_4100_read_trains.mat');
@@ -25,15 +25,14 @@ column=[2,3,4,5];
 trainLines = m1;
 gdata(1:trainLines,:) = data_trains(1:trainLines,:);
 
-%从1到trainlines间随机排序
+%Random sorting
 t=rand(1,trainLines);
 [m,n]=sort(t);
 
-%得到输入输出数据
+%Get input and output data
 ginput=gdata(:,column);
 goutput1 =gdata(:,6);
-% [a,b]=find(goutput1==1);
-%输出从一维变成四维：0正常，1gain，2hemi_loss，3homo_loss;
+
 goutput=zeros(trainLines,4);
 for i=1:trainLines
     switch goutput1(i)
@@ -48,46 +47,42 @@ for i=1:trainLines
     end
 end
 
-%找出训练数据和预测数据
+%Find the training data and prediction data
 ginput_train=ginput(n(1:trainLines),:)';
 goutput_train=goutput(n(1:trainLines),:)';
 
-%样本输入输出数据归一化
+%Normalization
 [ginputn,ginputps]=mapminmax(ginput_train);
 [outputn,outputps]=mapminmax(goutput_train);
 
-%% 权重初始化
+%Weight initialization
 [mm,nn]=size(ginput_train);
 D(1,:)=ones(1,nn)/nn;
-
-%% 中间变量的初始化
 
 precision_sum=[];
 sensitivition_sum=[];
 error_number=0;
 
-%% BP强分类器设计
+%% Design of strong classifier
 k=3;
 result_yc = zeros(k,nn);
 at=zeros(1,k);
 result_yc=zeros(k,nn);
-% 保存弱分类器预测
-% prediction = cell(k, 1);
 for i=1:k
-    %初始化网络结构
+    %Initializing the network structure
     net=newff(ginputn,goutput_train,7);
     net.trainParam.epochs=200;
     net.trainParam.lr=0.1;
     net.trainParam.goal=0.00004;
     
-    %网络训练
+    %Network Training
     net=train(net,ginputn,goutput_train);
     
-    %训练数据预测
+    %Projections
     an=sim(net,ginputn);
     test_sim=mapminmax('reverse',an,outputps);
-%     test_simu(i)=test_sim;
-    %统计输出结果（以输出错误节点为标准）
+    
+    %Statistical output results
     erroryc = abs(test_sim-goutput');
         for j=1:nn
             [x,y]=min(erroryc);
@@ -101,24 +96,23 @@ for i=1:k
                 result_yc(i,j)=3;
             end
         end
-%    prediction{i} = result_yc; 
-   %统计此次分类器的准确率
-   %计算误差
+
+   %Statistical accuracy of this weak classifier
+   %Calculation error
    error(i)=0;
    error_number=0;
    TP_number=0;
    for j=1:nn
        if result_yc(i,j)~=goutput1(j) && result_yc(i,j)~=0  
-             error_number=error_number+1;  %统计预测错误的数目
+             error_number=error_number+1;  %Number of statistical prediction errors
              if result_yc(i,j)~=goutput1(j) 
                  error(i)=error(i)+D(i,j);
              end
        elseif (result_yc(i,j)==goutput1(j)) && (goutput1(j)~=0)
-             TP_number=TP_number+1;  %统计预测正确的数目
+             TP_number=TP_number+1;  %Number of statistical predictions correct
        end
    end
      
-    %统计P
     P_count=0;
     for j=1:nn
         if goutput1(j)==1||goutput1(j)==2||goutput1(j)==3
@@ -126,36 +120,35 @@ for i=1:k
         end
     end
     
-    %计算本次分类器的权重
+    %Calculate the weights of this classifier
     at(i) = log((1-error(i))/error(i))+log(3);
     
-    %调整D值(以输出错误节点为标准)
+    %Adjustment of D value
     for j=1:nn
        D(i+1,j)=D(i,j)*exp(at(i)*(result_yc(j)~=goutput1(j)));
     end
     
-    %D值的归一化
+    %Normalization of D values
     Dsum=sum(D(i+1,:));
     D(i+1,:)=D(i+1,:)/Dsum; 
     
-    %统计所以分类器的敏感度
+    %Counting the sensitivity of all classifiers
     sensitivition = TP_number/P_count;
     sensitivition_sum=[sensitivition_sum sensitivition];
-    %统计所有分类器的准确率
+    %Counting the precision of all classifiers
     TPFP_number=TP_number+error_number;
     precision= TP_number/TPFP_number;
     precision_sum = [precision_sum precision];
     
-    %训练网络的保存
+    %Save training network
     save(['net\BP_Ada_',num2str(i)],'net');
     
 end
-%保存所有弱分类器的权值,分类器数目
 save('Parameters\at','at')
 save('Parameters\k','k')
 
 
-%% 组合弱分类器结果
+%% Combining weak classifiers
 TP_count=0;
 TPFP_count=0;
 if k~=1
@@ -177,5 +170,5 @@ for q=1:nn
 end
 precision_boost=TP_count/TPFP_count;
 sensitivition_boost=TP_count/P_count;
-disp(['训练集准确率：' num2str(precision_boost)]);
-disp(['训练集敏感度：' num2str(sensitivition_boost)]);
+disp(['Precisiom of the training set：' num2str(precision_boost)]);
+disp(['Sensitivity of the training set：' num2str(sensitivition_boost)]);
