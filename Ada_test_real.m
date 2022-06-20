@@ -1,14 +1,14 @@
-%% 该部分为BP_Adaboost算法的测试集分类过程
+%% This part is the real set classification process of CNVABNN
 
-%% 清空环境变量
+%% Clear environment variables
 clc
 clear
 
-%% 导入训练好的BP神经网络参数
+%% Import the parameters of the trained BP neural network
 load('-mat','Parameters\K');
 load('-mat','Parameters\at');
 
-%% 获取训练样本中的归一化说明文件
+%% Get the normalized description file in the training sample
 data1=load('\tests\SimulationData_mat\0.2_4x_mat\sim1_4_4100_read_trains.mat');
 data2=load('\tests\SimulationData_mat\0.3_4x_mat\sim1_4_4100_read_trains.mat');
 data3=load('\tests\SimulationData_mat\0.4_4x_mat\sim1_4_4100_read_trains.mat');
@@ -29,15 +29,11 @@ column=[2,3,4,5];
 trainLines = m1;
 gdata(1:trainLines,:) = data_trains(1:trainLines,:);
 
-%从1到trainlines间随机排序
 t=rand(1,trainLines);
 [m,n]=sort(t);
 
-%得到输入输出数据
 ginput=gdata(:,column);
 goutput1 =gdata(:,6);
-% [a,b]=find(goutput1==1);
-%输出从一维变成四维：0正常，1gain，2hemi_loss，3homo_loss;
 goutput=zeros(trainLines,4);
 for i=1:trainLines
     switch goutput1(i)
@@ -52,19 +48,17 @@ for i=1:trainLines
     end
 end
 
-%找出训练数据和预测数据
+%Find the training data and prediction data
 ginput_train=ginput(n(1:trainLines),:)';
 goutput_train=goutput(n(1:trainLines),:)';
 
-%样本输入输出数据归一化
+%Normalization
 [ginputn,ginputs]=mapminmax(ginput_train);
 [goutputn,outputs]=mapminmax(goutput_train);
 
-%获取groundtruth
+%% Test section
 
-%% 测试部分
-
-%导入测试样本数据
+%Importing test sample data
 datat=load('\tests\RealData_mat\NA19240_tests.mat');
 data_tests = datat.('NA19240_tests');
 [m2,n2]=size(data_tests);
@@ -87,20 +81,20 @@ end
 ginput_test=ginput_test((1:m2),:)';
 goutput_insim=goutput_insim((1:m2),:)';
     
-%获取归一化的测试输入样本数据
+%Obtain normalized test samples
 input_test=mapminmax('apply',ginput_test,ginputs);
 precision_sum=[];
 sensitivition_sum=[];   
 for i=1:k
-    %加载k个弱分类器网络
+    %Load k weak classifier networks
     load('-mat',['\net\BP_Ada_',num2str(i)]);
-    %网络预测输出
+    %Predicted output results
     an = sim(net,input_test);
    
-    %反归一化预测输出
+    %inverse normalization
     BPoutput=mapminmax('reverse',an,outputs);
     
-    %统计预测误差
+    %Calculate the forecast error
     error=abs(BPoutput-goutput_insim);
 
     P_count=0;
@@ -120,7 +114,7 @@ for i=1:k
             TPFP_count=TPFP_count+1; 
         end
     end
-    %分类结果
+    %Classification results
     for j=1:m2
         [x,y]=min(error);
         if y(j)==1
@@ -141,10 +135,10 @@ for i=1:k
     precision_sum = [precision_sum precision];
 end
  
-%% 组合弱分类器
+%% Combining weak classifiers
 TP_count_boost=0;
 TPFP_count_boost=0;
-result_boost=combine_BP(result_yc,at,m2,k); %生成强预测结果
+result_boost=combine_BP(result_yc,at,m2,k);
 for q=1:m2
    if (result_boost(q)==1&&goutput_test(q)==1||result_boost(q)==2&&goutput_test(q)==2||result_boost(q)==3&&goutput_test(q)==3)
       TP_count_boost=TP_count_boost+1;
@@ -155,18 +149,17 @@ for q=1:m2
    end
 end
 
-%计算强分类敏感度
+%Calculating the sensitivity of a strong classifier
 sensitivition_boost=TP_count_boost/P_count;
 
-%计算强分类准确率
+%Calculating the precision of a strong classifier
 precision_boost = TP_count_boost/TPFP_count_boost;
 
-%输出准确率信息
-disp(['真实集的准确率为：' num2str(precision_boost)]);
+%Output
+disp(['precision of the real set：' num2str(precision_boost)]);
 
-%输出敏感信息
-disp(['真实集的敏感度为：' num2str(sensitivition_boost)]);
+disp(['sensitivity of the real set：' num2str(sensitivition_boost)]);
 
-%输出F1-score
+%1-score
 F1_score=(2*sensitivition_boost*precision_boost)/(sensitivition_boost+precision_boost);
-disp(['真实集的F1-score为:' num2str(F1_score)]);
+disp(['F1-score of the real set:' num2str(F1_score)]);
