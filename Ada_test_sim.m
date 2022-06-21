@@ -5,8 +5,6 @@ clc
 clear
 
 %% Import the parameters of the trained neural network
-%load('-mat','\parameter -last\K');
-%load('-mat','\parameter -last\at');
 load('-mat','\K');
 load('-mat','\at');
 %% Import groundtruth file
