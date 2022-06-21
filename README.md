@@ -8,16 +8,16 @@ A method for CNV detection using neural networks and the AdaBoost framework
 4. Detection performance of CNVABNN
 
 # Document Description
-*code:* Saved the complete code of the project<br>
-*img:* Saved two example images of the project<br>
-*RealData:* Three real datasets used by the project are saved<br>
-*SimulationData(purity==0.2):* The simulation dataset used in the project at a purity of 0.2 is saved<br>
-*train:* The training set used to train the model is saved<br>
-*Ada_test_real.m:* Script for testing real datasets with CNVABNN<br>
-*Ada_test_sim.m:* Script for testing simulated datasets with CNVABNN<br>
-*combine_BP.m:* Combining functions of weak classifiers<br>
-*train.m:* Script for training the network model of CNABNN<br>
-*main_simulation1.py:* Extracting the input feature values of the neural network
+**code:** Saved the complete code of the project<br>
+**img:** Saved two example images of the project<br>
+**RealData:** Three real datasets used by the project are saved<br>
+**SimulationData(purity==0.2):** The simulation dataset used in the project at a purity of 0.2 is saved<br>
+**train:** The training set used to train the model is saved<br>
+**Ada_test_real.m:** Script for testing real datasets with CNVABNN<br>
+**Ada_test_sim.m:** Script for testing simulated datasets with CNVABNN<br>
+**combine_BP.m:** Combining functions of weak classifiers<br>
+**train.m:** Script for training the network model of CNABNN<br>
+**main_simulation1.py:** Extracting the input feature values of the neural network
 
 ## introduction
 CNVABNN is a cnv detection method based on RD strategy for single sample. The project provides the complete implementation code and a partial dataset. In the test dataset, there are two parts of samples, one part is simulated sample and the other part is real sample. Specific details of the usage can be found in the usage section of CNVABNN. This project combines neural network technology and AdaBoost algorithm to provide detection efficiency. The simulated data sets used in the experiments are mainly low-coverage data with tumor purity of 0.2, 0.3, and 0.4; and coverage of 4x and 6x.
