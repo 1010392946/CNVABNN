@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import Normalizer
 import re
 
-#Extraction of eigenvalues by loci，binsize=1000
+#Extraction of eigenvalues，binsize=1000
 
 def get_chrlist(filename):
     # Read chromosome sequences from bam files
@@ -76,7 +76,6 @@ def ReadDepth(ReadCount, binNum, ref):
     RD = RD[index]
     GC = GC[index]
     pos = pos[index]
-    #RD = gc_correct(RD, GC)
 
     return pos, RD , GC
 
@@ -93,13 +92,6 @@ def gc_correct(RD, GC):
     return RD
 '''
 
-# def plot(pos, data):
-#     plt.scatter(pos, data, s=3, c="black")
-#     plt.xlabel("pos")
-#     plt.ylabel("rd")
-#     plt.show()
-
-########for z in range(1,51):
 for z in range(1,1):
     # get params
     num = z;
@@ -153,10 +145,9 @@ for z in range(1,1):
     list2 = np.array(list2,dtype=int)
     #print(list2)
 
-    #Convert the bit array into a bin array, view the bin corresponding to the bit
+    #View the bin corresponding to the bit
     list3 = list2 /binSize
     list3 = np.array(list3,dtype=int)
-    #print(list3)
 
     #Definition of the relevance array
     avg1 = np.full(5, 0.0)
@@ -245,7 +236,7 @@ for z in range(1,1):
         myOut2.write(str(pos[i]))      #bin
         myOut2.write("\t"+str(RD[i]))  #rd
         myOut2.write("\t"+str(normal_GC[i]*10))  #gc
-        #关联度rel
+        #rel
         if (pos[i] - pos[0]) < 5 :
             avg1[i] = RD[i] - (sum(RD[(i + 1):(i + 5)]) / 5)
             myOut2.write("\t"+str(abs(avg1[i])))
