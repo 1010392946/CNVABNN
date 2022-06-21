@@ -46,9 +46,20 @@ Before training the model, the path of the data needs to be modified. The path o
 ### step2: Train
 Run train.m to train the neural networks based on partial simulation data. Moreover, the training model needs to be saved for testing purposes, so the saving path of the corresponding parameters needs to be modified, and the parameters involved include all weak classifiers(BP_Ada_1~BP_Ada_3), combination weights(ak), and the number of weak classifiers(k). CNVABNN detects CNVs by building a model based on neural network and AdaBoost, and the model directly determines the efficiency of detection. The four feature values used by CNVABNN can be extracted by main_simulation1.py. For other types of data, you can consider adding other feature values to optimize the detection performance.
 
-### step3: Detection of CNV in the simulation datasets
-Detection of CNVs in the simulated sample requires importing the training model in Ada_test_sim.m, all weak classifiers(BP_Ada_1~BP_Ada_3), combination weights(ak), and the number of weak classifiers(k).The results obtained using the trained neural network are the probabilities of the four copy number states. By comparing the magnitude of the probabilities, the type of copy numbers can be determined. The structure of the neural network in this project is shown in the following figure:
+#### step2.1 Input
+Wrap the extracted feature values into a txt or mat file for input
+#### step2.2 Building the network model
+Construct a BP network model through matalb's neural network toolbox and define the relevant parameters of the weak classifier. The structure of the neural network in this project is shown in the following figure:
 ![](img/network.jpg)
+#### step2.3 Model Training
+The weak classifier is trained and the weight parameters are updated according to the AdaBoost algorithm framework and used to optimize the next weak classifier.
+#### step2.4 Optimizing weak classifiers
+Optimize the next weak classifier according to the updated weight parameters and train again. The optimization is repeated until the end of the cycle.
+#### step2.5 Save parameters
+Save the training model and related parameters
+
+### step3: Detection of CNV in the simulation datasets
+Detection of CNVs in the simulated sample requires importing the training model in Ada_test_sim.m, all weak classifiers(BP_Ada_1~BP_Ada_3), combination weights(ak), and the number of weak classifiers(k).The results obtained using the trained neural network are the probabilities of the four copy number states. By comparing the magnitude of the probabilities, the type of copy numbers can be determined.<br>
 In addition, this project incorporates the Adaboost algorithm to improve the detection performance of the neural network. In the test of simulated samples, we used a total of 300 samples, some of which can be found in SimulationData folder. The output of Ada_test_sim.m is the precision and sensitivity of the CNV prediction. If you want to extract the location and type of variation, you need to modify line 166 to output numbers of variant bin to a file.
 
 ### step4: Detection of CNV in the real datasets
