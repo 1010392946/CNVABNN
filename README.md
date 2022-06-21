@@ -63,7 +63,7 @@ Detection of CNVs in the simulated sample requires importing the training model 
 #### step3.1：Input
 To perform the testing process of simulation data, you need to import the trained weak classifier, as well as the groundtruth file, and also load the simulation dataset.
 #### step3.2：Predictions
-Based on the four types of features, predictions are made on the simulated dataset and the prediction results for each of the three weak classifications are saved.
+Based on the four types of features, predictions are made on the simulated dataset and the prediction results for each of the three weak classifiers are saved.
 #### step3.3：Combining weak classifiers
 The results of the weak classifiers are merged using a voting mechanism, and the bin of CNV and parameters such as TP, FP are also determined.
 #### step3.4：Result Statistics
