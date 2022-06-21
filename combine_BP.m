@@ -8,7 +8,6 @@ result_boost=zeros(1,nn);
 for i=1:nn
     p_0=0;p_1=0;p_2=0;p_3=0;
     for j=1:k
-%         result_yc = prediction{j};
         if result_yc(j,i)==0
             p_0=p_0+at(j);
         elseif result_yc(j,i)==1
