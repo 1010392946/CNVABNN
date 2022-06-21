@@ -17,9 +17,10 @@ Ada_test_real.m: Script for testing real datasets with CNVABNN
 Ada_test_sim.m: Script for testing simulated datasets with CNVABNN
 combine_BP.m: Combining functions of weak classifiers
 train.m: Script for training the network model of CNABNN
+main_simulation1.py: Extracting the input feature values of the neural network
 
 ## introduction
-CNVABNN is a cnv detection method based on RD strategy for single sample. The project provides the complete implementation code and a partial dataset. In the test dataset, there are two parts of samples, one part is simulated sample and the other part is real sample. Specific details of the usage can be found in the usage section of CNVABNN. This project combines neural network technology and AdaBoost algorithm to provide detection efficiency.
+CNVABNN is a cnv detection method based on RD strategy for single sample. The project provides the complete implementation code and a partial dataset. In the test dataset, there are two parts of samples, one part is simulated sample and the other part is real sample. Specific details of the usage can be found in the usage section of CNVABNN. This project combines neural network technology and AdaBoost algorithm to provide detection efficiency. The simulated data sets used in the experiments are mainly low-coverage data with tumor purity of 0.2, 0.3, and 0.4; and coverage of 4x and 6x.
 
 ## Requirement/environment
 This code was tested with Matlab R2020b and the machine configuration used for testing was as follows：
@@ -43,7 +44,7 @@ git clone https://github.com/1010392946/CNVABNN.git
 Before training the model, the path of the data needs to be modified. The path of data1-data6 used in train.m needs to be modified. The imported data are from the partial simulated dataset, which can be found in the train folder. For other application environments, consider using other training sets for substitution.
 
 ### step2: Train
-Run train.m to train the neural networks based on partial simulation data. Moreover, the training model needs to be saved for testing purposes, so the saving path of the corresponding parameters needs to be modified, and the parameters involved include all weak classifiers(BP_Ada_1~BP_Ada_3), combination weights(ak), and the number of weak classifiers(k). CNVABNN detects CNVs by building a model based on neural network and AdaBoost, and the model directly determines the efficiency of detection.
+Run train.m to train the neural networks based on partial simulation data. Moreover, the training model needs to be saved for testing purposes, so the saving path of the corresponding parameters needs to be modified, and the parameters involved include all weak classifiers(BP_Ada_1~BP_Ada_3), combination weights(ak), and the number of weak classifiers(k). CNVABNN detects CNVs by building a model based on neural network and AdaBoost, and the model directly determines the efficiency of detection. The four feature values used by CNVABNN can be extracted by main_simulation1.py. For other types of data, you can consider adding other feature values to optimize the detection performance.
 
 ### step3: Detection of CNV in the simulation datasets
 Detection of CNVs in the simulated sample requires importing the training model in Ada_test_sim.m, all weak classifiers(BP_Ada_1~BP_Ada_3), combination weights(ak), and the number of weak classifiers(k).The results obtained using the trained neural network are the probabilities of the four copy number states. By comparing the magnitude of the probabilities, the type of copy numbers can be determined. The structure of the neural network in this project is shown in the following figure:
@@ -51,7 +52,7 @@ Detection of CNVs in the simulated sample requires importing the training model 
 In addition, this project incorporates the Adaboost algorithm to improve the detection performance of the neural network. In the test of simulated samples, we used a total of 300 samples, some of which can be found in SimulationData folder. The output of Ada_test_sim.m is the precision and sensitivity of the CNV prediction. If you want to extract the location and type of variation, you need to modify line 166 to output numbers of variant bin to a file.
 
 ### step4: Detection of CNV in the real datasets
-The detection of the real datasets of CNVs using CNVABNN similarly to step 3. Running Ada_test_real simply requires importing the training model and modifying the path. Among them, we give the three real datasets used for testing, NA19238,NA19239,NA19240, which can be found in the RealData folder.
+The detection of the real datasets of CNVs using CNVABNN similarly to step 3. Running Ada_test_real simply requires importing the training model and modifying the path. Among them, we give the three real datasets used for testing, NA19238,NA19239,NA19240, which can be found in the RealData folder. The detection performance of CNVABNN can be well evaluated by simulation samples and real samples. For other real datasets it can be considered to evaluate the corresponding simulated datasets first.
 
 ## Detection performance of CNVABNN
 CNVABNN achieves good performance on low coverage datasets and is also adaptable at higher coverage. The performance comparison with MFCNV is as follows:
