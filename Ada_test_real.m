@@ -94,7 +94,7 @@ for i=1:k
     %inverse normalization
     BPoutput=mapminmax('reverse',an,outputs);
     
-    %Calculate the forecast error
+    %Calculate the error
     error=abs(BPoutput-goutput_insim);
 
     P_count=0;
